@@ -1,30 +1,47 @@
 import { StyleSheet } from 'react-native';
 
 const mealSearchListStyles = StyleSheet.create({
-  card: {
+  cardModern: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 12,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
+    elevation: 3,
+    justifyContent: 'space-between',
   },
-  mealImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
+  leftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  mealImageModern: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginRight: 14,
     backgroundColor: '#EEE',
   },
-  mealLabel: {
-    fontSize: 16,
-    color: '#111',
-    fontWeight: '500',
+  mealLabelModern: {
+    fontSize: 17,
+    color: '#222',
+    fontWeight: '600',
+  },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  actionBtn: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#F8F8F8',
+    marginLeft: 2,
   },
 });
 

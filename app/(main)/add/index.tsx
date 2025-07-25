@@ -15,10 +15,10 @@ import { useFocusEffect } from '@react-navigation/native';
 import { fetchAutoComplete } from '@/services/foodService';
 import { insertMeal } from '@/services/dbService';
 import { TEXTS } from '@/constants/texts';
-import MealList from '@/components/MealSearchList';
 import TopBar from '@/components/TopBar';
 import { PrimaryButton } from '@/components/buttons/PrimaryButton';
 import { MealSearchItem } from '@/components/fields/MealSearchItem';
+import MealSearchList from '@/components/MealSearchList';
 
 export default function AddMealScreen() {
     const [query, setQuery] = useState<string | undefined>(undefined);
@@ -61,6 +61,11 @@ export default function AddMealScreen() {
         setQuery('');
         setResults([]);
     };
+      const handleDeleteMeal = async (meal: { label: string }) => {
+        const updatedMeals = mealsAsync.filter(m => m.label !== meal.label);
+        setMealsAsync(updatedMeals);
+        await AsyncStorage.setItem('meals', JSON.stringify(updatedMeals));
+    };
 
     const handleValidate = async () => {
         if (!mealsAsync.length) return;
@@ -85,7 +90,7 @@ export default function AddMealScreen() {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.container}>
                 <TopBar showBack title="Ajouter un repas" />
-<View style={styles.inputWrapper}>
+                <View style={styles.inputWrapper}>
                     <TextInput
                         placeholder={TEXTS.searchPlaceholder}
                         value={query}
@@ -114,7 +119,7 @@ export default function AddMealScreen() {
                     </View>
                 )}
                 <Text style={styles.title}>{TEXTS.addedFoodsTitle}</Text>
-                <MealList meals={mealsAsync} />
+                <MealSearchList meals={mealsAsync} onDelete={handleDeleteMeal} />
                 <PrimaryButton
                     label={TEXTS.validateMeal}
                     onPress={handleValidate}
