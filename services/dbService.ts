@@ -46,3 +46,11 @@ export const getMeals = async () => {
 export const getFoodsByMeal = async (mealId: number) => {
   return await db.getAllAsync('SELECT * FROM foods WHERE meal_id = ?;', [mealId]);
 };
+export const clearDatabase = async () => {
+  await db.withTransactionAsync(async () => {
+    await db.execAsync('DELETE FROM foods;');
+    await db.execAsync('DELETE FROM meals;');
+    await db.execAsync('DELETE FROM sqlite_sequence WHERE name="meals" OR name="foods";');
+  });
+};
+

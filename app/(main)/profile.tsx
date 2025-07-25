@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch, Alert } from 'react-native';
 import Colors from '@/constants/Colors';
 import { useUser, SignedIn } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
@@ -7,8 +7,40 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import TopBar from '@/components/TopBar';
 import { SignOutButton } from '@/components/buttons/SignOutButton';
 import { TEXTS } from '@/constants/texts';
+import { clearDatabase } from '@/services/dbService';
+import { PrimaryButton } from '@/components/buttons/PrimaryButton';
 
 function ProfileScreen() {
+    const [clearing, setClearing] = useState(false);
+    const handleClearData = async () => {
+        const confirm = window.confirm
+            ? window.confirm('Êtes-vous sûr de vouloir supprimer toutes vos données ?')
+            : await new Promise(resolve => {
+                    Alert.alert(
+                        TEXTS.confirmTitle,
+                        TEXTS.confirmDelete,
+                        [
+                            { text: TEXTS.cancel, style: 'cancel', onPress: () => resolve(false) },
+                            { text: TEXTS.delete, style: 'destructive', onPress: () => resolve(true) },
+                        ],
+                        { cancelable: true }
+                    );
+            });
+        if (!confirm) return;
+        setClearing(true);
+        try {
+            if (!clearDatabase) {
+                alert(TEXTS.clearDbNotFound);
+                setClearing(false);
+                return;
+            }
+            await clearDatabase();
+            alert(TEXTS.dataDeleted);
+        } catch (e) {
+            alert(TEXTS.deleteError);
+        }
+        setClearing(false);
+    };
     const { user } = useUser();
     const router = useRouter();
     const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -53,6 +85,13 @@ function ProfileScreen() {
 
             <View style={{ marginTop: 24 }}>
                 <SignOutButton />
+                <PrimaryButton
+                    label={clearing ? 'Suppression...' : 'Supprimer toutes les données'}
+                    variant="danger"
+                    style={{ marginTop: 16 }}
+                    onPress={handleClearData}
+                >
+                </PrimaryButton>
             </View>
         </ScrollView>
     );

@@ -2,6 +2,8 @@ import { useSignIn } from '@clerk/clerk-expo'
 import { Link, useRouter } from 'expo-router'
 import { Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native'
 import React from 'react'
+import { PrimaryButton } from '@/components/buttons/PrimaryButton';
+import { Toast } from '@/components/Toast';
 
 const styles = StyleSheet.create({
   container: {
@@ -54,37 +56,44 @@ const styles = StyleSheet.create({
 });
 
 export default function Page() {
+  const [toast, setToast] = React.useState<{ message: string; type?: 'success' | 'error'; visible: boolean }>({ message: '', type: 'error', visible: false });
   const { signIn, setActive, isLoaded } = useSignIn()
   const router = useRouter()
 
   const [emailAddress, setEmailAddress] = React.useState('')
   const [password, setPassword] = React.useState('')
 
-  // Handle the submission of the sign-in form
   const onSignInPress = async () => {
-    if (!isLoaded) return
-
-    // Start the sign-in process using the email and password provided
+    if (!isLoaded) return;
     try {
       const signInAttempt = await signIn.create({
         identifier: emailAddress,
         password,
-      })
-
-      // If sign-in process is complete, set the created session as active
-      // and redirect the user
+      });
       if (signInAttempt.status === 'complete') {
-        await setActive({ session: signInAttempt.createdSessionId })
-        router.replace('/')
+        await setActive({ session: signInAttempt.createdSessionId });
+        router.replace('/');
       } else {
-        // If the status isn't complete, check why. User might need to
-        // complete further steps.
-        console.error(JSON.stringify(signInAttempt, null, 2))
+        setToast({ message: 'Mauvais identifiant', type: 'error', visible: true });
+        setTimeout(() => setToast({ ...toast, visible: false }), 2000);
       }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
+    } catch (err: any) {
+      let showError = false;
+      if (err && err.errors && Array.isArray(err.errors)) {
+        for (const e of err.errors) {
+          if (
+            e.code === 'form_identifier_not_found' ||
+            e.code === 'form_password_incorrect' ||
+            e.code === 'form_param_nil' ||
+            e.code === 'form_conditional_param_missing'
+          ) {
+            showError = true;
+            break;
+          }
+        }
+      }
+      setToast({ message: showError ? 'Mauvais identifiant' : 'Erreur inconnue', type: 'error', visible: true });
+      setTimeout(() => setToast({ ...toast, visible: false }), 2000);
     }
   }
 
@@ -105,15 +114,9 @@ export default function Page() {
         secureTextEntry={true}
         onChangeText={setPassword}
       />
-      <TouchableOpacity style={styles.button} onPress={onSignInPress}>
-        <Text style={styles.buttonText}>Continuer</Text>
-      </TouchableOpacity>
-      <View style={styles.linkRow}>
-        <Text>Pas de compte ?</Text>
-        <Link href="/sign-up">
-          <Text style={styles.linkText}>Inscription</Text>
-        </Link>
-      </View>
+      <PrimaryButton label="Continuer" onPress={onSignInPress} style={{ marginBottom: 16, width: 260 }} />
+      <PrimaryButton label="Inscription" onPress={() => router.replace('/sign-up')} variant="secondary" style={{ marginBottom: 16, width: 260 }} />
+      <Toast message={toast.message} type={toast.type} visible={toast.visible} />
     </View>
   )
 }

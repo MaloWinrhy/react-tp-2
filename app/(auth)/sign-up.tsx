@@ -1,4 +1,6 @@
 import * as React from 'react'
+import { Toast } from '@/components/Toast';
+import { PrimaryButton } from '@/components/buttons/PrimaryButton';
 import { Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native'
 import { useSignUp } from '@clerk/clerk-expo'
 import { Link, useRouter } from 'expo-router'
@@ -54,6 +56,7 @@ const styles = StyleSheet.create({
 });
 
 export default function SignUpScreen() {
+  const [toast, setToast] = React.useState<{ message: string; type?: 'success' | 'error'; visible: boolean }>({ message: '', type: 'error', visible: false });
   const { isLoaded, signUp, setActive } = useSignUp()
   const router = useRouter()
 
@@ -62,54 +65,64 @@ export default function SignUpScreen() {
   const [pendingVerification, setPendingVerification] = React.useState(false)
   const [code, setCode] = React.useState('')
 
-  // Handle submission of sign-up form
   const onSignUpPress = async () => {
-    if (!isLoaded) return
-
-    // Start sign-up process using email and password provided
+    if (!isLoaded) return;
+    if (!emailAddress && !password) {
+      setToast({ message: 'Adresse email et mot de passe requis', type: 'error', visible: true });
+      setTimeout(() => setToast({ ...toast, visible: false }), 2000);
+      return;
+    }
+    if (!emailAddress) {
+      setToast({ message: 'Adresse email requise', type: 'error', visible: true });
+      setTimeout(() => setToast({ ...toast, visible: false }), 2000);
+      return;
+    }
+    if (!password) {
+      setToast({ message: 'Mot de passe requis', type: 'error', visible: true });
+      setTimeout(() => setToast({ ...toast, visible: false }), 2000);
+      return;
+    }
     try {
       await signUp.create({
         emailAddress,
         password,
-      })
-
-      // Send user an email with verification code
-      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
-
-      // Set 'pendingVerification' to true to display second form
-      // and capture OTP code
-      setPendingVerification(true)
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
+      });
+      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
+      setPendingVerification(true);
+    } catch (err: any) {
+      let showError = false;
+      if (err && err.errors && Array.isArray(err.errors)) {
+        for (const e of err.errors) {
+          if (
+            e.code === 'form_identifier_not_found' ||
+            e.code === 'form_password_incorrect' ||
+            e.code === 'form_param_nil' ||
+            e.code === 'form_conditional_param_missing'
+          ) {
+            showError = true;
+            break;
+          }
+        }
+      }
+      setToast({ message: showError ? 'Mauvais identifiant' : 'Erreur inconnue', type: 'error', visible: true });
+      setTimeout(() => setToast({ ...toast, visible: false }), 2000);
     }
   }
 
-  // Handle submission of verification form
   const onVerifyPress = async () => {
-    if (!isLoaded) return
-
+    if (!isLoaded) return;
     try {
-      // Use the code the user provided to attempt verification
-      const signUpAttempt = await signUp.attemptEmailAddressVerification({
-        code,
-      })
-
-      // If verification was completed, set the session to active
-      // and redirect the user
+      const signUpAttempt = await signUp.attemptEmailAddressVerification({ code });
       if (signUpAttempt.status === 'complete') {
-        await setActive({ session: signUpAttempt.createdSessionId })
-        router.replace('/')
+        await setActive({ session: signUpAttempt.createdSessionId });
+        router.replace('/');
       } else {
-        // If the status is not complete, check why. User may need to
-        // complete further steps.
-        console.error(JSON.stringify(signUpAttempt, null, 2))
+        setToast({ message: 'Mauvais identifiant', type: 'error', visible: true });
+        setTimeout(() => setToast({ ...toast, visible: false }), 2000);
       }
-    } catch (err) {
-      // See https://clerk.com/docs/custom-flows/error-handling
-      // for more info on error handling
-      console.error(JSON.stringify(err, null, 2))
+    } catch (err: any) {
+      setToast({ message: 'Erreur inconnue', type: 'error', visible: true });
+      setTimeout(() => setToast({ ...toast, visible: false }), 2000);
     }
   }
 
@@ -123,11 +136,10 @@ export default function SignUpScreen() {
           placeholder="Code de vérification"
           onChangeText={setCode}
         />
-        <TouchableOpacity style={styles.button} onPress={onVerifyPress}>
-          <Text style={styles.buttonText}>Vérifier</Text>
-        </TouchableOpacity>
+        <PrimaryButton label="Vérifier" onPress={onVerifyPress} style={{ marginBottom: 16, width: 260 }} />
+        <Toast message={toast.message} type={toast.type} visible={toast.visible} />
       </View>
-    )
+    );
   }
 
   return (
@@ -147,15 +159,14 @@ export default function SignUpScreen() {
         secureTextEntry={true}
         onChangeText={setPassword}
       />
-      <TouchableOpacity style={styles.button} onPress={onSignUpPress}>
-        <Text style={styles.buttonText}>Continuer</Text>
-      </TouchableOpacity>
+      <PrimaryButton label="Continuer" onPress={onSignUpPress} style={{ marginBottom: 16, width: 260 }} />
       <View style={styles.linkRow}>
         <Text>Déjà un compte ?</Text>
         <Link href="/sign-in">
           <Text style={styles.linkText}>Connexion</Text>
         </Link>
       </View>
+      <Toast message={toast.message} type={toast.type} visible={toast.visible} />
     </View>
   )
 }

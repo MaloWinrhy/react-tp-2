@@ -13,27 +13,33 @@ export default function HomeScreen() {
   const router = useRouter();
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <TopBar />
-      <View style={styles.quickActions}>
-        <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/add')}>
-          <Ionicons name="add-circle" size={24} color={Colors.light.tint} />
-          <Text style={styles.actionText}>{TEXTS.homeAddMeal}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/add/camera')}>
-          <Ionicons name="barcode" size={24} color={Colors.light.tabIconDefault} />
-          <Text style={styles.actionText}>{TEXTS.homeScanProduct}</Text>
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.sectionTitle}>{TEXTS.homeRecentMeals}</Text>
-        <MealList onMealPress={(id) => router.push(`/meal/${id}`)} />
-
-      <Text style={styles.sectionTitle}>{TEXTS.homeWeeklyTracking}</Text>
-      <View style={styles.statCard}>
-        <Text style={styles.statText}>{TEXTS.homeDailyAverage}</Text>
-      </View>
-    </ScrollView>
+    <MealList
+      onMealPress={(id: string) => router.push(`/meal/${id}`)}
+      ListHeaderComponent={
+        <View style={styles.content}>
+          <TopBar />
+          <View style={styles.quickActions}>
+            <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/add')}>
+              <Ionicons name="add-circle" size={24} color={Colors.light.tint} />
+              <Text style={styles.actionText}>{TEXTS.homeAddMeal}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/add/camera')}>
+              <Ionicons name="barcode" size={24} color={Colors.light.tabIconDefault} />
+              <Text style={styles.actionText}>{TEXTS.homeScanProduct}</Text>
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.sectionTitle}>{TEXTS.homeRecentMeals}</Text>
+        </View>
+      }
+      ListFooterComponent={
+        <View style={styles.content}>
+          <Text style={styles.sectionTitle}>{TEXTS.homeWeeklyTracking}</Text>
+          <View style={styles.statCard}>
+            <Text style={styles.statText}>{TEXTS.homeDailyAverage}</Text>
+          </View>
+        </View>
+      }
+    />
   );
 }
 
