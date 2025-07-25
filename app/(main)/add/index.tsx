@@ -84,7 +84,8 @@ export default function AddMealScreen() {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.container}>
-                <TopBar showBack title="Ajouter un repas" />        <View style={styles.inputWrapper}>
+                <TopBar showBack title="Ajouter un repas" />
+<View style={styles.inputWrapper}>
                     <TextInput
                         placeholder={TEXTS.searchPlaceholder}
                         value={query}

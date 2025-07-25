@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import topBarStyles from './TopBar.styles';
 import Colors from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useUser } from '@clerk/clerk-expo';
@@ -15,22 +16,24 @@ export default function TopBar({ showBack = false, title }: TopBarProps) {
   const { user } = useUser();
 
   return (
-    <View style={styles.headerWrapper}>
+    <View style={topBarStyles.headerWrapper}>
       {showBack ? (
         <>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <TouchableOpacity onPress={() => router.back()} style={topBarStyles.backBtn}>
             <Ionicons name="arrow-back" size={24} color="#388E3C" />
           </TouchableOpacity>
-          <Text style={styles.pageTitle}>{title}</Text>
-          <View style={{ width: 42 }} /> {/* pour équilibrer visuellement */}
+          <Text style={topBarStyles.pageTitle} numberOfLines={1}>
+            {title}
+          </Text>
+          <View style={{ width: 42 }} />
         </>
       ) : (
         <>
-          <View>
-            <Text style={styles.hello}>Bonjour</Text>
-            <Text style={styles.username}>{user?.username ?? 'Utilisateur'}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={topBarStyles.hello}>Bonjour</Text>
+            <Text style={topBarStyles.username}>{user?.username ?? 'Utilisateur'}</Text>
           </View>
-          <TouchableOpacity style={styles.avatarCircle}>
+          <TouchableOpacity style={topBarStyles.avatarCircle}>
             <Ionicons name="person" size={24} color="#388E3C" />
           </TouchableOpacity>
         </>
@@ -39,33 +42,4 @@ export default function TopBar({ showBack = false, title }: TopBarProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  headerWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  hello: { fontSize: 16, color: Colors.light.tabIconDefault },
-  username: { fontSize: 22, fontWeight: 'bold', color: Colors.light.text },
-  avatarCircle: {
-    width: 42,
-    height: 42,
-    backgroundColor: Colors.light.background,
-    borderRadius: 21,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backBtn: {
-    padding: 6,
-    borderRadius: 8,
-    backgroundColor: Colors.light.background,
-  },
-  pageTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: Colors.light.text,
-    flex: 1,
-    textAlign: 'center',
-  },
-});
+// styles déplacés dans TopBar.styles.ts

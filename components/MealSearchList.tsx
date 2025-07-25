@@ -1,5 +1,6 @@
 import React from 'react';
-import { FlatList, View, Text, Image, StyleSheet } from 'react-native';
+import { FlatList, View, Text, Image } from 'react-native';
+import mealSearchListStyles from './MealSearchList.styles';
 import { commonStyles } from './styles';
 
 interface Meal {
@@ -21,11 +22,11 @@ export default function MealList({ meals }: Props) {
       data={meals}
       keyExtractor={(item, idx) => item.label + idx}
       renderItem={({ item }) => (
-        <View style={styles.card}>
+        <View style={mealSearchListStyles.card}>
           {item.image && (
-            <Image source={{ uri: item.image }} style={styles.mealImage} />
+            <Image source={{ uri: item.image }} style={mealSearchListStyles.mealImage} />
           )}
-          <Text style={styles.mealLabel}>{item.label}</Text>
+          <Text style={mealSearchListStyles.mealLabel}>{item.label}</Text>
         </View>
       )}
       contentContainerStyle={{ paddingBottom: 16 }}
@@ -34,30 +35,4 @@ export default function MealList({ meals }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-  mealImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-    backgroundColor: '#EEE',
-  },
-  mealLabel: {
-    fontSize: 16,
-    color: '#111',
-    fontWeight: '500',
-  },
-});
+// styles déplacés dans MealSearchList.styles.ts

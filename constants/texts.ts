@@ -1,4 +1,10 @@
 export const TEXTS = {
+  profileTitle: 'Mon profil',
+  defaultUser: 'Utilisateur',
+  noEmail: 'Adresse e-mail non disponible',
+  settings: 'Paramètres',
+  stats: 'Mes statistiques',
+  appearance: 'Apparence',
   homeAddMeal: 'Ajouter un repas',
   homeScanProduct: 'Scanner un produit',
   homeRecentMeals: 'Mes repas récents',
