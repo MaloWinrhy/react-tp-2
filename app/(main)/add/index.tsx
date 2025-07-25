@@ -16,11 +16,13 @@ import { fetchAutoComplete } from '@/services/foodService';
 import { insertMeal } from '@/services/dbService';
 import { TEXTS } from '@/constants/texts';
 import TopBar from '@/components/TopBar';
+import { Toast } from '@/components/Toast';
 import { PrimaryButton } from '@/components/buttons/PrimaryButton';
 import { MealSearchItem } from '@/components/fields/MealSearchItem';
 import MealSearchList from '@/components/MealSearchList';
 
 export default function AddMealScreen() {
+    const [toast, setToast] = useState<{ message: string; type?: 'success' | 'error'; visible: boolean }>({ message: '', type: 'success', visible: false });
     const [query, setQuery] = useState<string | undefined>(undefined);
     const [results, setResults] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
@@ -80,9 +82,13 @@ export default function AddMealScreen() {
         }));
         try {
             await insertMeal(date, totalCalories, foods);
-            alert(TEXTS.mealSaved);
+            setToast({ message: TEXTS.mealSaved, type: 'success', visible: true });
+            setMealsAsync([]);
+            await AsyncStorage.setItem('meals', JSON.stringify([]));
+            setTimeout(() => setToast({ ...toast, visible: false }), 2000);
         } catch (e) {
-            alert(TEXTS.error);
+            setToast({ message: TEXTS.error, type: 'error', visible: true });
+            setTimeout(() => setToast({ ...toast, visible: false }), 2000);
         }
     };
 
@@ -131,6 +137,7 @@ export default function AddMealScreen() {
                     variant="secondary"
                     style={{ marginTop: 12 }}
                 />
+                <Toast message={toast.message} type={toast.type} visible={toast.visible} />
             </View>
         </TouchableWithoutFeedback>
     );

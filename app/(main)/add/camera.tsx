@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Alert } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { useRouter } from 'expo-router';
+import { PrimaryButton } from '@/components/buttons/PrimaryButton';
 
 export default function CameraScreen() {
   const [scanned, setScanned] = useState(false);
@@ -12,26 +13,22 @@ export default function CameraScreen() {
   const scanLock = useRef(false);
 
   useEffect(() => {
-    console.log('Permission:', permission);
-    console.log('Scanned:', scanned);
-    console.log('Barcode:', barcode);
+    if (permission?.granted === false) {
+      Alert.alert('Permission Denied', 'Camera access is required to scan barcodes.');
+    }
   }, [permission, scanned, barcode]);
 
   const handleBarCodeScanned = (result: BarcodeScanningResult) => {
     if (scanLock.current) return;
     scanLock.current = true;
-    console.log('Barcode scanned result:', result);
     setScanned(true);
     setBarcode(result.data);
     setTimeout(() => {
       if (result.data) {
-        console.log('Navigating to details with UPC:', result.data);
         router.push({
           pathname: '/add/details/[param]',
           params: { param: result.data, upc: result.data },
         });
-      } else {
-        console.log('No barcode data found in result');
       }
     }, 100);
   };
@@ -43,20 +40,17 @@ export default function CameraScreen() {
   };
 
   if (!permission) {
-    console.log('Permission object is null');
     return <View style={styles.center}><Text>Demande de permission...</Text></View>;
   }
   if (!permission.granted) {
-    console.log('Permission not granted');
     return (
       <View style={styles.center}>
         <Text>Permission caméra requise</Text>
-        <Text style={{ color: '#007AFF', margin: 16 }} onPress={requestPermission}>Autoriser la caméra</Text>
+        <PrimaryButton label="Autoriser la caméra" onPress={requestPermission} style={{ margin: 16 }} />
       </View>
     );
   }
 
-  console.log('Rendering CameraScreen, scanned:', scanned);
   return (
     <View style={{ flex: 1 }}>
       {!scanned ? (
@@ -68,10 +62,8 @@ export default function CameraScreen() {
         />
       ) : (
         <View style={styles.center}>
-          <Text style={{ color: '#007AFF', margin: 16 }}>Scannez un autre code ?</Text>
-          <Text style={{ color: '#007AFF', textDecorationLine: 'underline' }} onPress={handleReset}>
-            Réinitialiser
-          </Text>
+          <PrimaryButton label="Scannez un autre code" onPress={handleReset} style={{ margin: 16, width: 300 }} />
+          <PrimaryButton label="Retour à la recette" onPress={() => router.replace('/add')} variant="secondary" style={{ marginTop: 8, width: 300 }} />
           {barcode && (
             <View style={styles.barcodeBox}>
               <Text style={{ color: '#fff' }}>Code: {barcode}</Text>

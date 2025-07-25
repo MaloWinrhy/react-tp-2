@@ -11,6 +11,7 @@ import {
   StyleSheet
 } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
+import { PrimaryButton } from '@/components/buttons/PrimaryButton';
 
 const EDAMAM_APP_ID = process.env.EXPO_PUBLIC_EDAMAM_APP_ID || '';
 const EDAMAM_APP_KEY = process.env.EXPO_PUBLIC_EDAMAM_APP_KEY || '';
@@ -34,9 +35,8 @@ export default function IngredientDetails() {
       const meals = existing ? JSON.parse(existing) : [];
       meals.push(meal);
       await AsyncStorage.setItem('meals', JSON.stringify(meals));
-      console.log('Repas ajouté !');
+      router.back();
     } catch (e) {
-      console.log('Erreur sauvegarde repas:', e);
     }
     setSaving(false);
   };
@@ -45,8 +45,7 @@ export default function IngredientDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   useEffect(() => {
-    console.log('Détail - param:', param);
-    console.log('Détail - upc:', upc);
+    // ...existing code...
   }, [param, upc]);
 
   useEffect(() => {
@@ -60,27 +59,21 @@ export default function IngredientDetails() {
         } else if (param && typeof param === 'string' && param.length > 0) {
           url = `https://api.edamam.com/api/food-database/v2/parser?app_id=${EDAMAM_APP_ID}&app_key=${EDAMAM_APP_KEY}&ingr=${encodeURIComponent(param)}&nutrition-type=cooking`;
         }
-        console.log('Détail - URL appelée:', url);
         if (!url) {
           setError('Aucun paramètre fourni');
           setLoading(false);
-          console.log('Détail - Aucun paramètre fourni');
           return;
         }
         const res = await fetch(url);
-        console.log('Détail - Status API:', res.status);
         if (!res.ok) {
           setError('Erreur API');
           setLoading(false);
-          console.log('Détail - Erreur API');
           return;
         }
         const json = await res.json();
-        console.log('Détail - Réponse API:', JSON.stringify(json));
         setData(json);
       } catch (err) {
         setError('Erreur de chargement');
-        console.log('Détail - Erreur de chargement:', err);
       }
       setLoading(false);
     };
@@ -104,12 +97,8 @@ export default function IngredientDetails() {
   let food: { label: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; image: any; category: string; nutrients: { ENERC_KCAL: any; PROCNT: any; FAT: any; CHOCDF: any; FIBTG: any; }; } | null = null;
   if (data && data.parsed?.length) {
     food = data.parsed[0].food;
-    console.log('Détail - Food trouvé dans parsed:', food);
   } else if (data && data.hints?.length) {
     food = data.hints[0].food;
-    console.log('Détail - Food trouvé dans hints:', food);
-  } else {
-    console.log('Détail - Aucune donnée food trouvée');
   }
 
   if (!food) {
@@ -146,21 +135,11 @@ export default function IngredientDetails() {
           <Info label="Fibres" value={`${food.nutrients.FIBTG ?? 'N/A'} g`} />
         </View>
 
-        <TouchableOpacity
-          style={{
-            backgroundColor: '#4CAF50',
-            padding: 16,
-            borderRadius: 8,
-            marginTop: 24,
-            alignItems: 'center',
-          }}
+        <PrimaryButton
+          label={saving ? 'Ajout...' : 'Ajouter à mon repas'}
           onPress={handleAddMeal}
-          disabled={saving}
-        >
-          <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 18 }}>
-            {saving ? 'Ajout...' : 'Ajouter à mon repas'}
-          </Text>
-        </TouchableOpacity>
+          style={{ marginTop: 24 }}
+        />
       </ScrollView>
     </View>
   );
