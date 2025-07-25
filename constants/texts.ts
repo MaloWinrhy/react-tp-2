@@ -1,0 +1,16 @@
+export const TEXTS = {
+  addMeal: 'Ajouter à mon repas',
+  validateMeal: 'Valider le repas',
+  scanBarcode: 'Scanner un Code Barres',
+  noFoodFound: 'Aucun aliment trouvé.',
+  noMealAdded: 'Aucun aliment ajouté.',
+  searchPlaceholder: 'Rechercher un aliment',
+  scanAnother: 'Scannez un autre code ?',
+  reset: 'Réinitialiser',
+  cameraPermission: 'Permission caméra requise',
+  allowCamera: 'Autoriser la caméra',
+  loading: 'Chargement...',
+  error: 'Erreur',
+  noData: 'Aucune donnée trouvée.',
+  back: '< Retour',
+};

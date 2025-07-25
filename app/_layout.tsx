@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Platform } from 'react-native';
 
 import { useColorScheme } from '@/components/useColorScheme';
+import { MealProvider } from '@/components/MealContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -45,10 +46,10 @@ export default function RootLayout() {
 
   return (
     <ClerkProvider tokenCache={tokenCache}>
-      <SafeAreaView style={{ flex: 1, marginTop: Platform.OS === 'android' ? 24 : 0 }}>
-        <Slot />
-      </SafeAreaView>
-    </ClerkProvider>
+        <SafeAreaView style={{ flex: 1, marginTop: Platform.OS === 'android' ? 24 : 0 }}>
+          <Slot />
+        </SafeAreaView>
+      </ClerkProvider>
   );
 }
 
