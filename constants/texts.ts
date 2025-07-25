@@ -13,4 +13,8 @@ export const TEXTS = {
   error: 'Erreur',
   noData: 'Aucune donnée trouvée.',
   back: '< Retour',
+  addMealTitle: 'Ajouter un repas',
+  mealSaved: 'Repas enregistré !',
+  noResults: 'Aucun aliment trouvé.',
+  addedFoodsTitle: 'Aliments ajoutés au repas',
 };
