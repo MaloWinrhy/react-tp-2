@@ -1,6 +1,7 @@
 import { Redirect, Stack, Tabs } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
-import { Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
 
 export default function MainLayout() {
   const { isSignedIn, isLoaded } = useAuth();
@@ -13,9 +14,9 @@ export default function MainLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#888',
-        tabBarStyle: { backgroundColor: '#fff', borderTopWidth: 0 },
+        tabBarActiveTintColor: Colors.light.tabIconSelected,
+        tabBarInactiveTintColor: Colors.light.tabIconDefault,
+        tabBarStyle: { backgroundColor: Colors.light.background, borderTopWidth: 0 },
       }}
     >
       <Tabs.Screen
@@ -23,7 +24,7 @@ export default function MainLayout() {
         options={{
           title: 'Accueil',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ color, fontSize: size }}>🏠</Text>
+            <Ionicons name="home-outline" size={size} color={color} />
           ),
         }}
       />
@@ -32,7 +33,7 @@ export default function MainLayout() {
         options={{
           title: 'Ajouter',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ color, fontSize: size }}>➕</Text>
+            <Ionicons name="add-circle-outline" size={size} color={color} />
           ),
         }}
       />
@@ -41,7 +42,7 @@ export default function MainLayout() {
         options={{
           title: 'Profil',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ color, fontSize: size }}>👤</Text>
+            <Ionicons name="person-outline" size={size} color={color} />
           ),
         }}
       />

@@ -1,44 +1,70 @@
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { TEXTS } from '@/constants/texts';
-import { useRouter } from 'expo-router';
+import Colors from '@/constants/Colors';
+import { Ionicons } from '@expo/vector-icons';
+import { useUser } from '@clerk/clerk-expo';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 
-export default function TopBar({ title }: { title: string }) {
+interface TopBarProps {
+  showBack?: boolean;
+  title?: string;
+}
+
+export default function TopBar({ showBack = false, title }: TopBarProps) {
   const router = useRouter();
+  const { user } = useUser();
+
   return (
-    <View style={styles.topBar}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-        <Text style={styles.backText}>{TEXTS.back}</Text>
-      </TouchableOpacity>
-      <Text style={styles.topBarTitle}>{title}</Text>
+    <View style={styles.headerWrapper}>
+      {showBack ? (
+        <>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+            <Ionicons name="arrow-back" size={24} color="#388E3C" />
+          </TouchableOpacity>
+          <Text style={styles.pageTitle}>{title}</Text>
+          <View style={{ width: 42 }} /> {/* pour équilibrer visuellement */}
+        </>
+      ) : (
+        <>
+          <View>
+            <Text style={styles.hello}>Bonjour</Text>
+            <Text style={styles.username}>{user?.username ?? 'Utilisateur'}</Text>
+          </View>
+          <TouchableOpacity style={styles.avatarCircle}>
+            <Ionicons name="person" size={24} color="#388E3C" />
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  topBar: {
+  headerWrapper: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#4CAF50',
-    paddingTop: 40,
-    paddingBottom: 12,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#A5D6A7',
+    marginBottom: 24,
   },
-  backButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    marginRight: 8,
+  hello: { fontSize: 16, color: Colors.light.tabIconDefault },
+  username: { fontSize: 22, fontWeight: 'bold', color: Colors.light.text },
+  avatarCircle: {
+    width: 42,
+    height: 42,
+    backgroundColor: Colors.light.background,
+    borderRadius: 21,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  backText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  backBtn: {
+    padding: 6,
+    borderRadius: 8,
+    backgroundColor: Colors.light.background,
   },
-  topBarTitle: {
-    color: '#fff',
+  pageTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: Colors.light.text,
     flex: 1,
     textAlign: 'center',
   },

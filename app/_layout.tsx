@@ -14,7 +14,6 @@ import { useColorScheme } from '@/components/useColorScheme';
 import { MealProvider } from '@/components/MealContext';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 

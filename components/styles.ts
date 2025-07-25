@@ -16,7 +16,7 @@ export const commonStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F6FAF7',
-    padding: 24,
+    paddingVertical: 24,
   },
   title: {
     fontSize: 26,

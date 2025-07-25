@@ -1,4 +1,9 @@
 export const TEXTS = {
+  homeAddMeal: 'Ajouter un repas',
+  homeScanProduct: 'Scanner un produit',
+  homeRecentMeals: 'Mes repas récents',
+  homeWeeklyTracking: 'Suivi hebdomadaire',
+  homeDailyAverage: 'Moyenne journalière : 1850 kcal',
   addMeal: 'Ajouter à mon repas',
   validateMeal: 'Valider le repas',
   scanBarcode: 'Scanner un Code Barres',
